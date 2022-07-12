@@ -10,7 +10,7 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-const db = mysql.createConnection(
+const db = mysql2.createConnection(
     {
         host: 'localhost',
         user: 'root',
@@ -171,6 +171,8 @@ function addEmployee()
         (answers.first_name, answers.last_name, answers.role_id, answers.manager_id);
         db.query('SELECT * FROM department');
         })}
+
+init();
     
 //function updateEmployee()
 //{
