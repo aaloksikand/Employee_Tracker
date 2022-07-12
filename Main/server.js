@@ -101,15 +101,7 @@ function init(){
         db.query('SELECT * FROM department');
         })}
 
-function addRole(){
-    db.query('SELECT * FROM departments', function(err, results))
 
-    .then((results)) => {
-        const options = results.map((i) => {
-            name: i.dept_name;
-            value: i.id,
-        })
-    }
     inquirer
     .prompt([
         // WHEN I choose to add a role
