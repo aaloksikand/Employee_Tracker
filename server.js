@@ -20,7 +20,9 @@ const db = mysql2.createConnection(
 
   console.log("Connected to the hr_db database.")
 );
-
+db.connect(function(err) {
+  console.log(err)
+})
 // GIVEN a command-line application that accepts user input
 // WHEN I start the application
 function init() {
@@ -42,33 +44,37 @@ function init() {
         ],
       },
     ])
-    .then((answers) => {
+    .then(async(answers) => {
       switch (answers.userChoice) {
         case "View all departments":
           // WHEN I choose to view all departments
           // THEN I am presented with a formatted table showing department names
           //and department ids
-          return db.query("SELECT * FROM departments", function (err, results) {
-            console.log(results);
-          });
+          let departments = await db.promise().query("SELECT * FROM department") 
+            console.table(departments[0]);
+            return;
 
         case "View all roles":
           // WHEN I choose to view all roles
           // THEN I am presented with the job title, role id, the department
           //that role belongs to, and the salary for that role
-          return db.query("SELECT * FROM roles", function (err, results) {
-            console.log(results);
-          });
-
+          //return db.query("SELECT * FROM role", function (err, results) {
+          //  console.log(results);
+          let roles = await db.promise().query("SELECT * FROM  role")
+          console.table(roles[0]);
+          return;  
+        
         case "View all employees":
           // WHEN I choose to view all employees
           // THEN I am presented with a formatted table showing employee data,
           //including employee ids, first names, last names, job titles,
           //departments, salaries, and managers that the employees report to
-          return db.query("SELECT * FROM employees", function (err, results) {
-            console.log(results);
-          });
-
+          //return db.query("SELECT * FROM employee", function (err, results) {
+          //  console.log(results);
+          let employees = await db.promise().query("SELECT * FROM employee")
+          console.table(employees[0]);
+          return:
+      
         case "Add a department":
           return addDepartment();
 
@@ -95,14 +101,24 @@ function init() {
         },
       ])
       .then((answers) => {
-        const dept = new Department(answers.dept_name);
-        db.query("INSERT INTO department(dept_name)");
-        VALUES($answers.dept_name);
-        db.query("SELECT * FROM department");
+        let departments = db.promise().query(`INSERT INTO department (dept_name) VALUES (${answers.departmentName})`) 
+        console.log("Department added.");    
+        console.table(departments[0]);
+            return;
       });
   }
 
-  inquirer
+  function addRole() {
+    var departmentArray = [];
+    db.query("SELECT * FROM department", function (err, results) {
+      //console.log(results);
+    departmentArray = results.map(row => {
+      return {
+        name: row.dept_name, value: row.id //loop through department
+      }
+    })
+    
+    inquirer
     .prompt([
       // WHEN I choose to add a role
       // THEN I am prompted to enter the name, salary,
@@ -114,27 +130,25 @@ function init() {
       },
       {
         type: "input",
-        message:
-          "Please enter annual salary rounding up to nearest whole number.",
+        message: "Please enter annual salary rounding up to nearest whole number.",
         name: "salary",
       },
       {
         type: "list",
         message: "Please associate new role with appropriate department ID.",
-        choice: options.id,
+        choices: departmentArray,
+        name: "departmentChoice",
       },
     ])
     .then((answers) => {
-      const role = new Role(
-        answers.title,
-        answers.salary,
-        answers.department_id
-      );
-      db.query("INSERT INTO role (title, salary, deptartment_id)");
-      VALUES(answers.title, answers.salary, answers_department_id);
-      db.query("SELECT * FROM department");
+      let roleUpdated = db.promise().query(`INSERT INTO role (title, salary, deptartment_id) VALUES (${answers.roleName}, ${answers.salary}, ${answers.departmentChoice})`) 
+        console.log("Role updated.");    
+        console.table(roleUpdated[0]);
+            return;
+      });
     });
-}
+  }
+
 function addEmployee() {
   inquirer
     .prompt([
@@ -177,26 +191,6 @@ function addEmployee() {
       );
       db.query("SELECT * FROM department");
     });
+  }
 }
-
 init();
-
-//function updateEmployee()
-//{
-//    UPDATE produce
-//SET name = "strawberry"
-//WHERE id = 1;
-//}
-
-// WHEN I choose to update an employee role
-// THEN I am prompted to select an employee to update and
-//their new role and this information is updated in the database
-
-//You might also want to make your queries asynchronous.
-//MySQL2 exposes a .promise() function on Connections to upgrade an existing non-Promise connection to use Promises.
-//To learn more and make your queries asynchronous, refer to the npm documentation on MySQL2
-
-//You will be committing a file that contains your database credentials.
-//Make sure that your MySQL password is not used for any other personal accounts, because it will be visible on GitHub.
-//In upcoming lessons, you will learn how to better secure this password, or you can start researching npm packages
-//now that could help you.
