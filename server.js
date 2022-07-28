@@ -100,20 +100,20 @@ function init() {
           name: "departmentName",
         },
       ])
-      .then(function(res)
-      db.query(
-        "INSERT INTO department SET ?"),
-        {
-          dept_name: res.departmentName
-        }),
-        console.log("Department added.");
-        console.table(departments[0]);
-      
-      // .then((answers) => {
-      //   let departments = db.promise().query(`INSERT INTO department (dept_name) VALUES (${answers.departmentName})`) 
-      //   console.log("Department added.");    
+      // .then(function(res)
+      // db.query(
+      //   "INSERT INTO department SET ?"),
+      //   {
+      //     dept_name: res.departmentName
+      //   }),
+      //   console.log("Department added.");
       //   console.table(departments[0]);
-      //       return;
+      
+      .then((answers) => {
+        let departments = db.promise().query(`INSERT INTO department (dept_name) VALUES (${answers.departmentName})`) 
+        console.log("Department added.");    
+        console.table(departments[0]);
+            return;
   }
 
   function addRole() {
