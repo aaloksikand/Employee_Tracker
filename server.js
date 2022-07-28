@@ -201,4 +201,5 @@ function addEmployee() {
     });
   }
 }
+}
 init();
