@@ -114,7 +114,7 @@ function init() {
         console.log("Department added.");    
         console.table(departments[0]);
             return;
-  }
+  })
 
   function addRole() {
     var departmentArray = [];
