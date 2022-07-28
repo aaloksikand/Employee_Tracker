@@ -73,7 +73,7 @@ function init() {
           //  console.log(results);
           let employees = await db.promise().query("SELECT * FROM employee")
           console.table(employees[0]);
-          return:
+          return;
       
         case "Add a department":
           return addDepartment();
