@@ -25,6 +25,9 @@ db.connect(function(err) {
 })
 // GIVEN a command-line application that accepts user input
 // WHEN I start the application
+
+let departments;
+
 function init() {
   inquirer
     .prompt([
@@ -50,7 +53,7 @@ function init() {
           // WHEN I choose to view all departments
           // THEN I am presented with a formatted table showing department names
           //and department ids
-          let departments = await db.promise().query("SELECT * FROM department") 
+          let departments = await db.promise().query("SELECT * FROM department") ;
             console.table(departments[0]);
             return;
 
@@ -100,21 +103,19 @@ function init() {
           name: "departmentName",
         },
       ])
-      // .then(function(res)
-      // db.query(
-      //   "INSERT INTO department SET ?"),
-      //   {
-      //     dept_name: res.departmentName
-      //   }),
-      //   console.log("Department added.");
-      //   console.table(departments[0]);
       
       .then((answers) => {
-        let departments = db.promise().query(`INSERT INTO department (dept_name) VALUES (${answers.departmentName})`) 
-        console.log("Department added.");    
-        console.table(departments[0]);
+        console.log(answers)
+        let departments = db.query(`INSERT INTO department (dept_name) VALUES (?)`,[answers.departmentName]) 
+        console.log("Department added.");
+        console.log(`${answers.departmentName}`)
+        //db.addDepartment(departments)    
+        // console.table(departments);
+        //.then(()=>console.table(departments))
             return;
-  })
+  }
+  )
+
 
   function addRole() {
     var departmentArray = [];
@@ -149,7 +150,7 @@ function init() {
       },
     ])
     .then((answers) => {
-      let roleUpdated = db.promise().query(`INSERT INTO role (title, salary, deptartment_id) VALUES (${answers.roleName}, ${answers.salary}, ${answers.departmentChoice})`) 
+      let roleUpdated = db.query(`INSERT INTO role (title, salary, deptartment_id) VALUES (?, ?, ?)`, [answers.roleName, answers.salary, answers.departmentChoice]) 
         console.log("Role updated.");    
         console.table(roleUpdated[0]);
             return;
