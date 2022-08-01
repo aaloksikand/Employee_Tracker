@@ -114,19 +114,19 @@ function init() {
         //.then(()=>console.table(departments))
             return;
   }
-  )
+  )}
 
 
-  function addRole() {
-    var departmentArray = [];
-    db.query("SELECT * FROM department", function (err, results) {
-      //console.log(results);
-    departmentArray = results.map(row => {
+   function addRole() {
+    // var departmentArray = [];
+    db.query("SELECT * FROM department", async function (err, results) {
+      // console.log(results);
+    let departmentArray = await results.map(row => {
       return {
         name: row.dept_name, value: row.id //loop through department
       }
     })
-    
+    //console.log(departmentArray);
     inquirer
     .prompt([
       // WHEN I choose to add a role
@@ -150,7 +150,8 @@ function init() {
       },
     ])
     .then((answers) => {
-      let roleUpdated = db.query(`INSERT INTO role (title, salary, deptartment_id) VALUES (?, ?, ?)`, [answers.roleName, answers.salary, answers.departmentChoice]) 
+      console.log(answers);
+      let roleUpdated = db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`, [answers.roleName, answers.salary, answers.departmentChoice]) 
         console.log("Role updated.");    
         console.table(roleUpdated[0]);
             return;
@@ -159,7 +160,18 @@ function init() {
   }
 
 function addEmployee() {
-  inquirer
+  db.query("SELECT * FROM role", async function (err, results) {
+   // console.log(results);
+  let rolesArray = await results.map(row => {
+    return {
+      name: row.title, value: row.id
+    }
+  })
+  
+   db.query("SELECT * FROM employee", (err, results)=> {
+    let manager_id = results.filter((data)=>data.manager_id!=null)
+    console.log(manager_id);
+    inquirer
     .prompt([
       {
         type: "input",
@@ -174,15 +186,14 @@ function addEmployee() {
       {
         type: "list",
         message: "Please select employee role.",
-        choice: options,
+        choice: rolesArray,
       },
       {
         type: "list",
         message: "Please select employee manager.",
         name: "managerList",
       },
-    ])
-    .then((answers) => {
+    ]).then((answers) => {
       const role = new Employee(
         answers.first_name,
         answers.last_name,
@@ -200,7 +211,13 @@ function addEmployee() {
       );
       db.query("SELECT * FROM department");
     });
+  })
+  //console.log(employeesArray)
+  
+    
+})
+    
   }
 }
-}
+
 init();
